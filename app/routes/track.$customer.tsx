@@ -26,12 +26,16 @@ export async function loader({ params }: LoaderArgs) {
 
 const schema = z.object({
   customer_id: z.string().min(1),
-  order: z.string().min(1),
+  order: z.string().min(1, { message: "O campo é obrigatório." }),
   identify: z.string(),
 });
 
 const mutation = makeDomainFunction(schema)(async (values) => {
   const order = await getOrderByIdAndCustomer(values.customer_id, values.order);
+
+  if (!values.identify || !values.identify.length) {
+    throw "O campo é obrigatório";
+  }
 
   if (!order) {
     throw "Pedido não encontrado.";
@@ -58,18 +62,18 @@ export default function Track() {
 
   const isSubmitting = transition.state === "submitting";
 
-  if (actionData) {
+  if (actionData && actionData.id) {
     return <h1>TODO</h1>;
   }
 
   return (
     <main className="mx-auto flex h-screen w-screen items-center justify-center bg-zinc-100 px-4">
-      <div className="min-h-max w-80 rounded-sm border bg-white p-4 shadow-md">
+      <div className="min-h-max max-w-lg rounded-sm border bg-white px-4 py-6 shadow-md">
         <div className="flex-1">
           <h1 className="text-center text-3xl font-semibold">
             {customer.name}
           </h1>
-          <p className="mt-2 mb-6 max-w-md text-center text-sm font-thin">
+          <p className="mt-2 mb-6 max-w-md text-center text-sm font-light">
             Mantenha-se sempre atualizado sobre o status de suas entregas, em
             tempo real e com praticidade!
           </p>

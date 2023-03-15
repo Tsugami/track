@@ -4,7 +4,7 @@ export default function Button({
 }: JSX.IntrinsicElements["button"]) {
   return (
     <button
-      className="bg-blue-400 text-white hover:bg-blue-500 py-2 font-medium focus:ring-blue-500 focus:ring-offset-white disabled:opacity-80 disabled:cursor-not-allowed"
+      className="bg-blue-400 py-2 font-medium text-white outline-2 outline-offset-2 outline-blue-300 hover:bg-blue-500 focus:outline disabled:cursor-not-allowed disabled:opacity-80"
       {...props}
     />
   );

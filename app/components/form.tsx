@@ -11,6 +11,7 @@ import Button from "./button";
 import { Field } from "./field";
 import { Label } from "./label";
 import { Input } from "./input";
+import { FieldError } from "./field-error";
 
 const BaseForm = createForm({
   component: RemixForm,
@@ -36,7 +37,7 @@ export function Form<Schema extends FormSchema>(props: FormProps<Schema>) {
       // checkboxComponent={Checkbox}
       buttonComponent={Button}
       // globalErrorsComponent={Errors}
-      // errorComponent={Error}
+      errorComponent={FieldError}
       {...props}
     />
   );
