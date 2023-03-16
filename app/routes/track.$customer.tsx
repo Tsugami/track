@@ -6,11 +6,12 @@ import { useActionData, useLoaderData, useNavigation } from "@remix-run/react";
 import { getCustomerByName } from "~/models/customer.server";
 
 import { z } from "zod";
-import { makeDomainFunction } from "domain-functions";
+import { InputError, makeDomainFunction } from "domain-functions";
 import { formAction } from "~/form/form-action.server";
 import { Form } from "~/components/form";
 import { MaskInput } from "~/components/input";
 import { getOrderByIdAndCustomer } from "~/models/order.server";
+import type { Order, User } from "@prisma/client";
 
 export async function loader({ params }: LoaderArgs) {
   const customer = await getCustomerByName(params.customer!);
@@ -34,7 +35,7 @@ const mutation = makeDomainFunction(schema)(async (values) => {
   const order = await getOrderByIdAndCustomer(values.customer_id, values.order);
 
   if (!values.identify || !values.identify.length) {
-    throw "O campo é obrigatório";
+    throw new InputError("O campo é obrigatório", "identify");
   }
 
   if (!order) {
@@ -47,6 +48,11 @@ const mutation = makeDomainFunction(schema)(async (values) => {
 
   return order;
 });
+
+const isOrder = (data: unknown): data is Order & { user: User } => {
+  // @ts-ignore
+  return data && data.id;
+};
 
 export const action = async ({ request }: ActionArgs) =>
   formAction({
@@ -62,12 +68,13 @@ export default function Track() {
 
   const isSubmitting = transition.state === "submitting";
 
-  if (actionData && actionData.id) {
+  if (isOrder(actionData)) {
     return <h1>TODO</h1>;
   }
 
   return (
     <main className="mx-auto flex h-screen w-screen items-center justify-center bg-zinc-100 px-4">
+      <link rel="stylesheet" href="/track/css/nubank.css" />
       <div className="min-h-max max-w-lg rounded-sm border bg-white px-4 py-6 shadow-md">
         <div className="flex-1">
           <h1 className="text-center text-3xl font-semibold">
