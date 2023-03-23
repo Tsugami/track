@@ -9,6 +9,6 @@ export const getOrderByIdAndCustomer = (
       id: orderId,
       customerId,
     },
-    include: { user: true }
+    include: { user: true, customer: true },
   });
 };

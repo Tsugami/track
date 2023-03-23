@@ -28,22 +28,24 @@ export async function loader({ params }: LoaderArgs) {
 const schema = z.object({
   customer_id: z.string().min(1),
   order: z.string().min(1, { message: "O campo é obrigatório." }),
-  identify: z.string(),
+  identify: z.string().optional(),
 });
 
 const mutation = makeDomainFunction(schema)(async (values) => {
   const order = await getOrderByIdAndCustomer(values.customer_id, values.order);
 
-  if (!values.identify || !values.identify.length) {
-    throw new InputError("O campo é obrigatório", "identify");
-  }
-
   if (!order) {
     throw "Pedido não encontrado.";
   }
 
-  if (order.user.identify_cpf !== values.identify) {
-    throw "Cpf inválido.";
+  if (order.customer.cpf_required) {
+    if (!values.identify || !values.identify.length) {
+      throw new InputError("O campo é obrigatório", "identify");
+    }
+
+    if (order.user.identify_cpf !== values.identify) {
+      throw "Cpf inválido.";
+    }
   }
 
   return order;
@@ -104,19 +106,21 @@ export default function Track() {
                   </>
                 )}
               </Field>
-              <Field name="identify" label="CPF">
-                {({ Label, Errors }) => (
-                  <>
-                    <Label />
-                    <MaskInput
-                      mask="000.000.000-00"
-                      {...register("identify")}
-                      disabled={isSubmitting}
-                    />
-                    <Errors />
-                  </>
-                )}
-              </Field>
+              {customer.cpf_required && (
+                <Field name="identify" label="CPF">
+                  {({ Label, Errors }) => (
+                    <>
+                      <Label />
+                      <MaskInput
+                        mask="000.000.000-00"
+                        {...register("identify")}
+                        disabled={isSubmitting}
+                      />
+                      <Errors />
+                    </>
+                  )}
+                </Field>
+              )}
               <Errors />
               <Button disabled={isSubmitting}>
                 {isSubmitting ? "..." : "Ver"}
