@@ -34,12 +34,14 @@
     "/postgres-data"
   ],
   "dependencies": {
+    "@emotion/css": "^11.10.6",
     "@isaacs/express-prometheus-middleware": "^1.2.1",
     "@prisma/client": "^4.9.0",
     "@remix-run/express": "^1.14.2",
     "@remix-run/node": "^1.14.2",
     "@remix-run/react": "^1.14.2",
     "@remix-run/server-runtime": "^1.14.2",
+    "clsx": "^1.2.1",
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
     "domain-functions": "^1.6.1",
